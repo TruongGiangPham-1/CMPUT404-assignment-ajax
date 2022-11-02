@@ -80,24 +80,40 @@ def hello():
 @app.route("/entity/<entity>", methods=['POST','PUT'])
 def update(entity):
     '''update the entities via this interface'''
-    # entity is a json object
-    print("entity is ", entity)
-    return None
+    # entity is the entityID, an INT
+    # so we wanna populate {entityID : {'x': 1, 'y': 2}}
+    postResponseBody = flask_post_json()  # get the response body of post /entity/<eneity> this is {'', ''} type
+    # entity is a json object of a dictionary
+
+    if request.method == 'POST':
+        myWorld.update(entity, postResponseBody)
+        entityGET = myWorld.get(entity)  # get by the enitty ID, this returns the value of entity 
+        # so if entity = {entity: {body}}, this returns the body
+        return entityGET
+    # PUT METHOD, so  will update ----------------------------------------------
+    for k, v in postResponseBody.items():
+        myWorld.update(entity, k, v)
+    entityGET = myWorld.get(entity)  # get by the enitty ID, this returns the value of entity 
+    # so if entity = {entity: {body}}, this returns the body
+    return entityGET
 
 @app.route("/world", methods=['POST','GET'])    
 def world():
     '''you should probably return the world here'''
-    return 
+    return myWorld.world()
 
 @app.route("/entity/<entity>")    
 def get_entity(entity):
     '''This is the GET version of the entity interface, return a representation of the entity'''
+    print("type of entity is ", type(entity))
+    # flask now will automatically cann jsonify so we can return python dict directly
     return myWorld.get(entity)
 
 @app.route("/clear", methods=['POST','GET'])
 def clear():
     '''Clear the world out!'''
-    return None
+    myWorld.clear()
+    return myWorld.world()
 
 if __name__ == "__main__":
     app.run()
