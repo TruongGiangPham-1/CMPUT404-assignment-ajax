@@ -62,7 +62,7 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
     //XXX: set the mimetype and the accept headers!
     // Remember to use application/json !
     // wait what do you need this function for?
-    if (objects == null) {  // we use that too
+    if (objects == null) {  // because we can call this function to GET the world
         xhr.open('GET', url)
     } else {
         xhr.open('POST', url)
@@ -88,6 +88,12 @@ function drawCircle(context,entity) {
         fillStyle = entity["colour"];
         strokeStyle = fillStyle;
         arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);  
+        fillRect(x + 20, y + 20, 25, 25)  // I added a rectanble
+        fillRect(x - x , y - y, 25, 25)  // I added a rectanble
+        fillRect(x + 20, y  - 20 - 2*y, 25, 25)  // I added a rectanble
+        fillRect(x - 20 - 2*x, y , 25, 25)  // I added a rectanble
+        moveTo(x + 50, y)
+        lineTo(x, y)
         stroke();                                
     }
 }
