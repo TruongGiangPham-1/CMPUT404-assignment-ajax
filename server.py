@@ -86,7 +86,7 @@ def update(entity):
     # entity is a json object of a dictionary
 
     if request.method == 'POST':
-        myWorld.update(entity, postResponseBody)
+        myWorld.set(entity, postResponseBody)
         entityGET = myWorld.get(entity)  # get by the enitty ID, this returns the value of entity 
         # so if entity = {entity: {body}}, this returns the body
         return entityGET

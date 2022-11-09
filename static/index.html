@@ -43,9 +43,14 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
                     // we got a response   (ready state == 4)
                     //https://stackoverflow.com/questions/1973140/parsing-json-from-xmlhttprequest-responsejson
                     // we got a response from our post request
-                    responseJson = JSON.parse(xhr.responseText)
-                    isThisJSon = xhr.response
-                    callback(responseJson)
+
+                    if (callback != null) {  // not null means we called sendJSONXML() to update the world
+                        responseJson = JSON.parse(xhr.responseText)
+                        isThisJSon = xhr.response
+                        callback(responseJson)
+                    } else  {
+                        // if callback == null means that we called sendJSONXML() to add an entity on thr front end
+                    }
                 }
             } 
             catch(e) {
@@ -57,10 +62,14 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
     //XXX: set the mimetype and the accept headers!
     // Remember to use application/json !
     // wait what do you need this function for?
-    xhr.open('POST', url)
+    if (objects == null) {  // we use that too
+        xhr.open('GET', url)
+    } else {
+        xhr.open('POST', url)
+    }
     xhr.setRequestHeader('Content-type', 'application/json')
     xhr.setRequestHeader('Accept', 'application/json')
-    xhr.send(objects)  // might beed to sringify it
+    xhr.send(JSON.stringify(objects))  // might beed to sringify it
 
 
 }
@@ -151,8 +160,8 @@ function addEntity(entity, data) {
     world[entity] = data;
     drawNextFrame(); // (but should we?)
     //XXX: Send a XHTML Request that updates the entity you just  modified!
-    
-
+    url = "/entity/" + entity
+    sendJSONXMLHTTPRequest(url, data, null)
 }
 
 var counter = 0;
@@ -276,7 +285,19 @@ mouse.mousedraggers.push(function(x,y,clicked,e) {
 
 function update() {
     //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
-    
+     
+    // get the world using our funciton
+    // this is called in an interval to update world
+
+    function MyCallback(data) {
+        world = data
+        drawFrame();  // update the world immediately
+    }
+    sendJSONXMLHTTPRequest("/world", null, (data) => {
+        world = data
+        drawFrame();  // update the world immediately
+    })
+
     drawFrame();
 }
 
